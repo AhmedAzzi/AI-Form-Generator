@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Google Form Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Background Effects -->
+    <div class="bg-animation">
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+        <div class="floating-shape shape-4"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-robot"></i>
+                <span id="logo-text">AI Form Generator</span>
+            </div>
+            <div class="header-actions">
+                <button class="lang-btn" id="lang-en" onclick="setLang('en')"><span class="en-label">English</span><span
+                        class="ar-label" style="display:none">الإنجليزية</span></button>
+                <button class="lang-btn" id="lang-ar" onclick="setLang('ar')"><span class="en-label">Arabic</span><span
+                        class="ar-label" style="display:none">العربية</span></button>
+                <button class="settings-btn" onclick="openSettings()">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="hero-section">
+                <h1 class="hero-title">Create Google Forms with AI</h1>
+                <p class="hero-subtitle">Transform your ideas into professional forms instantly</p>
+            </div>
+
+            <div class="form-section">
+                <div class="input-card">
+                    <div class="card-header">
+                        <i class="fas fa-magic"></i>
+                        <h2>Describe Your Form</h2>
+                    </div>
+                    <div class="input-wrapper">
+                        <textarea id="prompt"
+                            placeholder="e.g., I need a customer feedback form with name, email, satisfaction rating (1-5), services used (checkboxes), and additional comments..."
+                            rows="6"></textarea>
+                        <div class="input-footer">
+                            <span class="char-count">0 characters</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-section">
+                    <button class="generate-btn" onclick="generateForm()">
+                        <i class="fas fa-wand-magic-sparkles"></i>
+                        <span>Generate Form</span>
+                        <div class="btn-glow"></div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="output-section" id="outputSection" style="display: none;">
+                <div class="output-card">
+                    <div class="card-header">
+                        <i class="fas fa-table"></i>
+                        <h2>Generated Table</h2>
+                        <div class="copy-btn-group">
+                            <button id="copy-table-tsv-btn" class="copy-btn" type="button">
+                                <i class="fas fa-copy"></i> Copy Table
+                            </button>
+                        </div>
+                    </div>
+                    <div class="output-content" id="output-table">
+                        <!-- Generated table will appear here -->
+                    </div>
+                </div>
+                <div class="output-card">
+                    <div class="card-header">
+                        <i class="fas fa-code"></i>
+                        <h2>Generated Script</h2>
+                        <div class="copy-btn-group">
+                            <button id="copy-code-btn" class="copy-btn" type="button">
+                                <i class="fas fa-code"></i> Copy Code
+                            </button>
+                        </div>
+                    </div>
+                    <div class="output-content" id="output-code">
+                        <!-- Generated code will appear here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-cog"></i> Settings</h3>
+                <button class="modal-close" onclick="closeSettings()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-item">
+                    <label for="apiKey">
+                        <i class="fas fa-key"></i>
+                        Gemini API Key
+                    </label>
+                    <div class="input-with-toggle">
+                        <input type="password" id="apiKey" placeholder="Enter your Gemini API key...">
+                        <button class="toggle-password" onclick="togglePassword()">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <small class="help-text">
+                        <i class="fas fa-info-circle"></i>
+                        Get your API key from <a href="https://makersuite.google.com/app/apikey" target="_blank">Google
+                            AI Studio</a>
+                    </small>
+                </div>
+                <div class="setting-item">
+                    <label>
+                        <i class="fas fa-palette"></i>
+                        Theme
+                    </label>
+                    <div class="theme-selector">
+                        <button class="theme-btn active" data-theme="default" onclick="setTheme('default')">
+                            <div class="theme-preview default-theme"></div>
+                            Default
+                        </button>
+                        <button class="theme-btn" data-theme="dark" onclick="setTheme('dark')">
+                            <div class="theme-preview dark-theme"></div>
+                            Dark
+                        </button>
+                        <button class="theme-btn" data-theme="neon" onclick="setTheme('neon')">
+                            <div class="theme-preview neon-theme"></div>
+                            Neon
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeSettings()">Cancel</button>
+                <button class="btn-primary" onclick="saveSettings()">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Generating your form...</p>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="script.js"></script>
+    <script>
+        // Simple i18n for EN/AR
+        const translations = {
+            en: {
+                logo: 'AI Form Generator',
+                heroTitle: 'Create Google Forms with AI',
+                heroSubtitle: 'Transform your ideas into professional forms instantly',
+                describeForm: 'Describe Your Form',
+                promptPlaceholder: 'e.g., I need a customer feedback form with name, email, satisfaction rating (1-5), services used (checkboxes), and additional comments...',
+                generate: 'Generate Form',
+                generatedTable: 'Generated Table',
+                generatedScript: 'Generated Script',
+                copyTable: 'Copy Table',
+                copyCode: 'Copy Code',
+                settings: 'Settings',
+                apiKey: 'Gemini API Key',
+                enterApiKey: 'Enter your Gemini API key...',
+                getApiKey: 'Get your API key from',
+                theme: 'Theme',
+                default: 'Default',
+                dark: 'Dark',
+                neon: 'Neon',
+                cancel: 'Cancel',
+                save: 'Save Settings',
+                generating: 'Generating your form...',
+                charCount: 'characters'
+            },
+            ar: {
+                logo: 'منشئ النماذج الذكي',
+                heroTitle: 'أنشئ نماذج Google بالذكاء الاصطناعي',
+                heroSubtitle: 'حوّل أفكارك إلى نماذج احترافية فوراً',
+                describeForm: 'صف النموذج المطلوب',
+                promptPlaceholder: 'مثال: أحتاج نموذج ملاحظات العملاء مع الاسم، البريد الإلكتروني، تقييم الرضا (1-5)، الخدمات المستخدمة (خانات اختيار)، وملاحظات إضافية...',
+                generate: 'إنشاء النموذج',
+                generatedTable: 'الجدول الناتج',
+                generatedScript: 'السكريبت الناتج',
+                copyTable: 'نسخ الجدول',
+                copyCode: 'نسخ السكريبت',
+                settings: 'الإعدادات',
+                apiKey: 'مفتاح Gemini API',
+                enterApiKey: 'أدخل مفتاح Gemini الخاص بك...',
+                getApiKey: 'احصل على مفتاحك من',
+                theme: 'المظهر',
+                default: 'افتراضي',
+                dark: 'داكن',
+                neon: 'نيون',
+                cancel: 'إلغاء',
+                save: 'حفظ الإعدادات',
+                generating: 'يتم إنشاء النموذج...',
+                charCount: 'أحرف'
+            }
+        };
+
+        function setLang(lang) {
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            document.documentElement.lang = lang;
+            const t = translations[lang];
+            document.getElementById('logo-text').textContent = t.logo;
+            document.querySelector('.hero-title').textContent = t.heroTitle;
+            document.querySelector('.hero-subtitle').textContent = t.heroSubtitle;
+            document.querySelector('.card-header h2').textContent = t.describeForm;
+            document.getElementById('prompt').placeholder = t.promptPlaceholder;
+            document.querySelector('.generate-btn span').textContent = t.generate;
+            document.querySelectorAll('.output-card')[0].querySelector('h2').textContent = t.generatedTable;
+            document.querySelectorAll('.output-card')[1].querySelector('h2').textContent = t.generatedScript;
+            document.getElementById('copy-table-tsv-btn').innerHTML = `<i class="fas fa-copy"></i> ${t.copyTable}`;
+            document.getElementById('copy-code-btn').innerHTML = `<i class="fas fa-code"></i> ${t.copyCode}`;
+            document.querySelector('.settings-btn').title = t.settings;
+            document.querySelector('label[for="apiKey"]').innerHTML = `<i class="fas fa-key"></i> ${t.apiKey}`;
+            document.getElementById('apiKey').placeholder = t.enterApiKey;
+            document.querySelector('.help-text').innerHTML = `<i class="fas fa-info-circle"></i> ${t.getApiKey} <a href=\"https://makersuite.google.com/app/apikey\" target=\"_blank\">Google AI Studio</a>`;
+            document.querySelector('label[for="apiKey"]').innerHTML = `<i class="fas fa-key"></i> ${t.apiKey}`;
+            document.querySelector('label[for="apiKey"]').nextElementSibling.querySelector('input').placeholder = t.enterApiKey;
+            document.querySelector('.setting-item label + .theme-selector .theme-btn[data-theme="default"]').textContent = t.default;
+            document.querySelector('.setting-item label + .theme-selector .theme-btn[data-theme="dark"]').textContent = t.dark;
+            document.querySelector('.setting-item label + .theme-selector .theme-btn[data-theme="neon"]').textContent = t.neon;
+            document.querySelector('.modal-footer .btn-secondary').textContent = t.cancel;
+            document.querySelector('.modal-footer .btn-primary').textContent = t.save;
+            document.querySelector('.loading-spinner p').textContent = t.generating;
+            // Update char count label
+            const charCountSpan = document.querySelector('.char-count');
+            if (charCountSpan) {
+                const count = document.getElementById('prompt').value.length;
+                charCountSpan.textContent = `${count} ${t.charCount}`;
+            }
+            // Language button labels
+            if (lang === 'ar') {
+                document.querySelector('#lang-en .en-label').style.display = 'none';
+                document.querySelector('#lang-en .ar-label').style.display = '';
+                document.querySelector('#lang-ar .en-label').style.display = 'none';
+                document.querySelector('#lang-ar .ar-label').style.display = '';
+            } else {
+                document.querySelector('#lang-en .en-label').style.display = '';
+                document.querySelector('#lang-en .ar-label').style.display = 'none';
+                document.querySelector('#lang-ar .en-label').style.display = '';
+                document.querySelector('#lang-ar .ar-label').style.display = 'none';
+            }
+        }
+        // Set default language to EN on load
+        window.addEventListener('DOMContentLoaded', function () {
+            setLang('en');
+            const prompt = document.getElementById('prompt');
+            const charCountSpan = document.querySelector('.char-count');
+            if (prompt && charCountSpan) {
+                prompt.addEventListener('input', function () {
+                    const lang = document.documentElement.lang || 'en';
+                    const t = translations[lang];
+                    charCountSpan.textContent = `${prompt.value.length} ${t.charCount}`;
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
