@@ -2,7 +2,10 @@
 let appState = {
     apiKey: '',
     theme: 'default',
-    isGenerating: false
+    model: 'gemini-1.5-flash',
+    isGenerating: false,
+    maxRetries: 3,
+    timeoutMs: 45000 // 45 seconds timeout
 };
 
 // Enhanced System Prompt for AI - Google Forms Generator
@@ -145,7 +148,8 @@ const elements = {
     settingsModal: null,
     loadingOverlay: null,
     toastContainer: null,
-    charCount: null
+    charCount: null,
+    modelSelect: null
 };
 
 // Initialize Application
@@ -166,6 +170,7 @@ function initializeElements() {
     elements.loadingOverlay = document.getElementById('loadingOverlay');
     elements.toastContainer = document.getElementById('toastContainer');
     elements.charCount = document.querySelector('.char-count');
+    elements.modelSelect = document.getElementById('modelSelect');
 }
 
 // Setup Event Listeners
@@ -196,8 +201,36 @@ function setupEventListeners() {
 
 // Update Character Count
 function updateCharCount() {
+    if (!elements.prompt || !elements.charCount) return;
     const count = elements.prompt.value.length;
-    elements.charCount.textContent = `${count} characters`;
+    const lang = document.documentElement.lang || 'en';
+    const unit = lang === 'ar' ? 'أحرف' : 'characters';
+    elements.charCount.textContent = `${count} ${unit}`;
+}
+
+// Toggle Guide Section
+function toggleGuide() {
+    const guideSection = document.getElementById('guideSection');
+    const btn = document.getElementById('guideToggleBtn');
+    if (!guideSection) return;
+
+    const isHidden = guideSection.style.display === 'none';
+    guideSection.style.display = isHidden ? 'block' : 'none';
+
+    if (isHidden) {
+        // Animate in
+        guideSection.style.opacity = '0';
+        guideSection.style.transform = 'translateY(-20px)';
+        requestAnimationFrame(() => {
+            guideSection.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            guideSection.style.opacity = '1';
+            guideSection.style.transform = 'translateY(0)';
+        });
+        btn.classList.add('active');
+        guideSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+        btn.classList.remove('active');
+    }
 }
 
 // Settings Management
@@ -213,17 +246,19 @@ function closeSettings() {
 
 function saveSettings() {
     appState.apiKey = elements.apiKey.value.trim();
+    appState.model = elements.modelSelect.value;
 
     // Save to localStorage
     try {
         const settings = {
             apiKey: appState.apiKey,
-            theme: appState.theme
+            theme: appState.theme,
+            model: appState.model
         };
         localStorage.setItem('formGeneratorSettings', JSON.stringify(settings));
-        showToast('Settings saved successfully!', 'success');
+        showToast(document.documentElement.lang === 'ar' ? 'تم حفظ الإعدادات بنجاح!' : 'Settings saved successfully!', 'success');
     } catch (error) {
-        showToast('Failed to save settings', 'error');
+        showToast(document.documentElement.lang === 'ar' ? 'فشل حفظ الإعدادات' : 'Failed to save settings', 'error');
         console.error('Error saving settings:', error);
     }
 
@@ -237,9 +272,11 @@ function loadSettings() {
             const settings = JSON.parse(savedSettings);
             appState.apiKey = settings.apiKey || '';
             appState.theme = settings.theme || 'default';
+            appState.model = settings.model || 'gemini-1.5-flash';
 
             // Apply loaded settings
             elements.apiKey.value = appState.apiKey;
+            if (elements.modelSelect) elements.modelSelect.value = appState.model;
             setTheme(appState.theme);
         }
     } catch (error) {
@@ -283,9 +320,9 @@ function showToast(message, type = 'info', duration = 3000) {
 
     const icon = getToastIcon(type);
     toast.innerHTML = `
-    < i class="${icon}" ></i >
+        <i class="${icon}"></i>
         <span>${message}</span>
-`;
+    `;
 
     elements.toastContainer.appendChild(toast);
 
@@ -345,15 +382,32 @@ async function generateForm() {
     showLoading();
 
     try {
-        const result = await callGeminiAPI(prompt);
+        const result = await callGeminiAPIWithRetry(prompt);
         displayResult(result);
-        showToast('Form generated successfully!', 'success');
+        showToast(document.documentElement.lang === 'ar' ? 'تم إنشاء النموذج بنجاح!' : 'Form generated successfully!', 'success');
     } catch (error) {
         console.error('Generation error:', error);
-        showToast(`Failed to generate form: ${error.message} `, 'error');
+        showToast(`${document.documentElement.lang === 'ar' ? 'فشل إنشاء النموذج' : 'Failed to generate form'}: ${error.message} `, 'error');
     } finally {
         appState.isGenerating = false;
         hideLoading();
+    }
+}
+
+// Gemini API Call with Retry Logic
+async function callGeminiAPIWithRetry(userPrompt, retryCount = 0) {
+    try {
+        return await callGeminiAPI(userPrompt);
+    } catch (error) {
+        const isRetryable = error.message.includes('429') || error.message.includes('500') || error.message.includes('503') || error.message.includes('timeout');
+
+        if (isRetryable && retryCount < appState.maxRetries) {
+            const delay = Math.pow(2, retryCount) * 1000;
+            console.warn(`API call failed, retrying in ${delay}ms... (Attempt ${retryCount + 1}/${appState.maxRetries})`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            return await callGeminiAPIWithRetry(userPrompt, retryCount + 1);
+        }
+        throw error;
     }
 }
 
@@ -376,49 +430,77 @@ async function callGeminiAPI(userPrompt) {
         }
     };
 
-    const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${appState.apiKey}`,
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), appState.timeoutMs);
+
+    try {
+        const response = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${appState.model}:generateContent?key=${appState.apiKey}`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody),
+                signal: controller.signal
+            }
+        );
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            const message = errorData.error?.message || `HTTP ${response.status}: ${response.statusText}`;
+            throw new Error(message);
         }
-    );
 
-    if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error?.message || `HTTP ${response.status}: ${response.statusText}`);
+        const data = await response.json();
+
+        if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+            throw new Error('Invalid response format from API');
+        }
+
+        return data.candidates[0].content.parts[0].text;
+    } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+            throw new Error('Request timed out after 45 seconds');
+        }
+        throw error;
     }
-
-    const data = await response.json();
-
-    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-        throw new Error('Invalid response format from API');
-    }
-
-    return data.candidates[0].content.parts[0].text;
 }
 
 // Display Result
 function displayResult(result) {
-    // Extract table and code blocks from result
-    const tableMatch = result.match(/(\|.+\|\n\|[-\s|:]+\|\n(?:\|.+\|\n?)+)/);
-    const codeMatch = result.match(/```(?:javascript)?\n([\s\S]*?)```/);
+    const isAr = document.documentElement.lang === 'ar';
+
+    // Extract table and code blocks from result with more robust regex
+    const tableMatch = result.match(/(\|[^\n]+\|\n\|[\s:-|]+\|\n(?:\|[^\n]+\|\n?)+)/);
+    const codeMatch = result.match(/```(?:javascript|js)?\s*\n([\s\S]*?)```/i);
 
     // Render table
+    const tableOutput = document.getElementById('output-table');
     if (tableMatch) {
-        document.getElementById('output-table').innerHTML = processMarkdownTable(tableMatch[1]);
+        tableOutput.innerHTML = processMarkdownTable(tableMatch[1]);
     } else {
-        document.getElementById('output-table').innerHTML = '<span style="color:#c00">No table found.</span>';
+        tableOutput.innerHTML = `<span style="color:#ffcc00">${isAr ? 'لم يتم العثور على جدول.' : 'No table found in AI response.'}</span>`;
     }
+
     // Render code
+    const codeOutput = document.getElementById('output-code');
     if (codeMatch) {
-        document.getElementById('output-code').innerHTML = `<pre><code class="language-javascript">${escapeHtml(codeMatch[1].trim())}</code></pre>`;
-        if (window.Prism) Prism.highlightAll();
+        const code = codeMatch[1].trim();
+        // Basic validation for Apps Script
+        if (!code.includes('function createFormFromSheet')) {
+            console.warn('Generated code might be missing the required entry point function.');
+        }
+
+        codeOutput.innerHTML = `<pre><code class="language-javascript">${escapeHtml(code)}</code></pre>`;
+        if (window.Prism) {
+            Prism.highlightElement(codeOutput.querySelector('code'));
+        }
     } else {
-        document.getElementById('output-code').innerHTML = '<span style="color:#c00">No code found.</span>';
+        codeOutput.innerHTML = `<span style="color:#ffcc00">${isAr ? 'لم يتم العثور على سكريبت.' : 'No code block found in AI response.'}</span>`;
     }
 
     // Add copy event listeners
@@ -427,14 +509,15 @@ function displayResult(result) {
         tableBtn.onclick = function () {
             const tsv = markdownTableToTSV(tableMatch[1]);
             copyTextToClipboard(tsv);
-            showToast('Table copied for Google Sheets!', 'success');
+            showToast(isAr ? 'تم نسخ الجدول لـ Google Sheets!' : 'Table copied for Google Sheets!', 'success');
         };
     }
+
     const codeBtn = document.getElementById('copy-code-btn');
     if (codeBtn && codeMatch) {
         codeBtn.onclick = function () {
-            copyTextToClipboard(codeMatch[1]);
-            showToast('Code copied to clipboard!', 'success');
+            copyTextToClipboard(codeMatch[1].trim());
+            showToast(isAr ? 'تم نسخ السكريبت!' : 'Code copied to clipboard!', 'success');
         };
     }
 
@@ -448,9 +531,18 @@ function displayResult(result) {
 // Convert markdown table to TSV for Google Sheets
 function markdownTableToTSV(md) {
     const lines = md.trim().split('\n');
-    // Remove separator line (second line)
+    if (lines.length < 3) return '';
+
+    // Filter out separator line
     const filtered = lines.filter((line, idx) => idx !== 1);
-    return filtered.map(line => line.split('|').slice(1, -1).map(cell => cell.trim()).join('\t')).join('\n');
+
+    return filtered.map(line => {
+        // More robust splitting: only split on | that are not escaped or inside code
+        const cells = line.split('|')
+            .slice(1, -1) // Remove outer pipes
+            .map(cell => cell.trim());
+        return cells.join('\t');
+    }).join('\n');
 }
 
 // Utility function to copy text to clipboard
@@ -498,12 +590,12 @@ function processMarkdownAndCode(text) {
 
 // Process Markdown Tables
 function processMarkdownTable(text) {
-    const tableRegex = /\|(.+)\|\n\|[-\s|:]+\|\n((?:\|.+\|\n?)+)/g;
+    const tableRegex = /\|(.+)\|\n\|[\s:-|]+\|\n((?:\|.+\|\n?)+)/g;
 
     return text.replace(tableRegex, (match, header, rows) => {
-        const headerCells = header.split('|').map(cell => cell.trim()).filter(cell => cell);
+        const headerCells = header.split('|').map(cell => cell.trim()).filter((cell, i, arr) => i > 0 && i < arr.length - 1);
         const rowsArray = rows.trim().split('\n').map(row =>
-            row.split('|').map(cell => cell.trim()).filter(cell => cell)
+            row.split('|').map(cell => cell.trim()).filter((cell, i, arr) => i > 0 && i < arr.length - 1)
         );
 
         let tableHtml = '<div class="table-container"><table class="markdown-table">';
@@ -519,9 +611,10 @@ function processMarkdownTable(text) {
         tableHtml += '<tbody>';
         rowsArray.forEach(row => {
             tableHtml += '<tr>';
-            row.forEach(cell => {
-                tableHtml += `<td>${escapeHtml(cell)}</td>`;
-            });
+            // Use headerCells length to ensure alignment
+            for (let i = 0; i < headerCells.length; i++) {
+                tableHtml += `<td>${escapeHtml(row[i] || '')}</td>`;
+            }
             tableHtml += '</tr>';
         });
         tableHtml += '</tbody></table></div>';

@@ -43,6 +43,179 @@
             <div class="hero-section">
                 <h1 class="hero-title">Create Google Forms with AI</h1>
                 <p class="hero-subtitle">Transform your ideas into professional forms instantly</p>
+                <button class="guide-toggle-btn" id="guideToggleBtn" onclick="toggleGuide()">
+                    <i class="fas fa-book-open"></i>
+                    <span class="en-label">How It Works</span>
+                    <span class="ar-label" style="display:none">كيف يعمل</span>
+                </button>
+            </div>
+
+            <!-- Step-by-Step Guide -->
+            <div class="guide-section" id="guideSection" style="display: none;">
+                <div class="guide-card">
+                    <div class="guide-header">
+                        <h2>
+                            <i class="fas fa-route"></i>
+                            <span class="en-label">Step-by-Step Guide</span>
+                            <span class="ar-label" style="display:none">دليل خطوة بخطوة</span>
+                        </h2>
+                        <div class="guide-flow">
+                            <span class="flow-badge"><i class="fas fa-pen"></i> <span class="en-label">Describe</span><span class="ar-label" style="display:none">صِف</span></span>
+                            <i class="fas fa-arrow-right flow-arrow"></i>
+                            <span class="flow-badge"><i class="fas fa-robot"></i> <span class="en-label">Generate</span><span class="ar-label" style="display:none">أنشئ</span></span>
+                            <i class="fas fa-arrow-right flow-arrow"></i>
+                            <span class="flow-badge"><i class="fas fa-table"></i> <span class="en-label">Paste</span><span class="ar-label" style="display:none">الصق</span></span>
+                            <i class="fas fa-arrow-right flow-arrow"></i>
+                            <span class="flow-badge"><i class="fas fa-play"></i> <span class="en-label">Run</span><span class="ar-label" style="display:none">شغّل</span></span>
+                            <i class="fas fa-arrow-right flow-arrow"></i>
+                            <span class="flow-badge"><i class="fas fa-check-circle"></i> <span class="en-label">Done!</span><span class="ar-label" style="display:none">تم!</span></span>
+                        </div>
+                    </div>
+
+                    <div class="guide-steps">
+                        <!-- Step 1 -->
+                        <div class="guide-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>
+                                    <i class="fas fa-key"></i>
+                                    <span class="en-label">Set Up Your API Key</span>
+                                    <span class="ar-label" style="display:none">إعداد مفتاح API</span>
+                                </h3>
+                                <p class="en-label">Click the <strong>⚙️ Settings</strong> icon in the top-right corner. Get a free API key from <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>, paste it in the settings, choose your preferred AI model, and click <strong>Save</strong>.</p>
+                                <p class="ar-label" style="display:none">اضغط على أيقونة <strong>⚙️ الإعدادات</strong> في الزاوية العلوية. احصل على مفتاح API مجاني من <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>، الصقه في الإعدادات، اختر نموذج الذكاء الاصطناعي المفضل، واضغط <strong>حفظ</strong>.</p>
+                                <div class="step-tip">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span class="en-label">Your key is saved locally in your browser — you only need to do this once.</span>
+                                    <span class="ar-label" style="display:none">يتم حفظ مفتاحك محلياً في متصفحك — تحتاج لفعل هذا مرة واحدة فقط.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="guide-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>
+                                    <i class="fas fa-pen-fancy"></i>
+                                    <span class="en-label">Describe Your Form</span>
+                                    <span class="ar-label" style="display:none">صِف النموذج المطلوب</span>
+                                </h3>
+                                <p class="en-label">In the input box below, write what you need in plain language. Be specific about question types:</p>
+                                <p class="ar-label" style="display:none">في مربع الإدخال أدناه، اكتب ما تحتاجه بلغة عادية. كن محدداً بشأن أنواع الأسئلة:</p>
+                                <div class="step-example">
+                                    <code class="en-label">Create a feedback form with: name (required), email (required), satisfaction 1-5 (multiple choice), services used (checkboxes: Support, Sales, Billing), and comments (optional paragraph)</code>
+                                    <code class="ar-label" style="display:none">أنشئ نموذج ملاحظات يحتوي على: الاسم (مطلوب)، البريد الإلكتروني (مطلوب)، تقييم الرضا 1-5 (اختيار متعدد)، الخدمات المستخدمة (خانات اختيار: الدعم، المبيعات، الفواتير)، والتعليقات (فقرة اختيارية)</code>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="guide-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>
+                                    <i class="fas fa-wand-magic-sparkles"></i>
+                                    <span class="en-label">Generate Table & Code</span>
+                                    <span class="ar-label" style="display:none">إنشاء الجدول والسكريبت</span>
+                                </h3>
+                                <p class="en-label">Click <strong>✨ Generate Form</strong> (or press <kbd>Ctrl</kbd>+<kbd>Enter</kbd>). The AI will produce two outputs:</p>
+                                <p class="ar-label" style="display:none">اضغط <strong>✨ إنشاء النموذج</strong> (أو اضغط <kbd>Ctrl</kbd>+<kbd>Enter</kbd>). سينتج الذكاء الاصطناعي مخرجين:</p>
+                                <div class="step-outputs">
+                                    <div class="step-output-item">
+                                        <i class="fas fa-table"></i>
+                                        <span class="en-label"><strong>Table</strong> — Your form structure for Google Sheets</span>
+                                        <span class="ar-label" style="display:none"><strong>جدول</strong> — هيكل النموذج لجداول Google</span>
+                                    </div>
+                                    <div class="step-output-item">
+                                        <i class="fas fa-code"></i>
+                                        <span class="en-label"><strong>Script</strong> — Apps Script code to create the form</span>
+                                        <span class="ar-label" style="display:none"><strong>سكريبت</strong> — كود Apps Script لإنشاء النموذج</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div class="guide-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h3>
+                                    <i class="fas fa-paste"></i>
+                                    <span class="en-label">Paste the Table into Google Sheets</span>
+                                    <span class="ar-label" style="display:none">الصق الجدول في جداول Google</span>
+                                </h3>
+                                <ol class="en-label">
+                                    <li>Open <a href="https://sheets.google.com" target="_blank">Google Sheets</a> → create a <strong>new blank spreadsheet</strong></li>
+                                    <li>Click <strong>📋 Copy Table</strong> in the app</li>
+                                    <li>Click cell <strong>A1</strong> in your spreadsheet</li>
+                                    <li>Paste with <kbd>Ctrl</kbd>+<kbd>V</kbd></li>
+                                </ol>
+                                <ol class="ar-label" style="display:none">
+                                    <li>افتح <a href="https://sheets.google.com" target="_blank">جداول Google</a> ← أنشئ <strong>جدول بيانات فارغ جديد</strong></li>
+                                    <li>اضغط <strong>📋 نسخ الجدول</strong> في التطبيق</li>
+                                    <li>اضغط على الخلية <strong>A1</strong> في جدول البيانات</li>
+                                    <li>الصق باستخدام <kbd>Ctrl</kbd>+<kbd>V</kbd></li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <!-- Step 5 -->
+                        <div class="guide-step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h3>
+                                    <i class="fas fa-file-code"></i>
+                                    <span class="en-label">Add the Apps Script</span>
+                                    <span class="ar-label" style="display:none">إضافة سكريبت Apps Script</span>
+                                </h3>
+                                <ol class="en-label">
+                                    <li>In your Google Sheet, go to <strong>Extensions → Apps Script</strong></li>
+                                    <li>Delete all default code in the editor</li>
+                                    <li>Click <strong>📋 Copy Code</strong> in the app</li>
+                                    <li>Paste the code into the Apps Script editor</li>
+                                    <li>Click <strong>💾 Save</strong> (or <kbd>Ctrl</kbd>+<kbd>S</kbd>)</li>
+                                </ol>
+                                <ol class="ar-label" style="display:none">
+                                    <li>في جدول Google، اذهب إلى <strong>الإضافات ← Apps Script</strong></li>
+                                    <li>احذف كل الكود الافتراضي في المحرر</li>
+                                    <li>اضغط <strong>📋 نسخ السكريبت</strong> في التطبيق</li>
+                                    <li>الصق الكود في محرر Apps Script</li>
+                                    <li>اضغط <strong>💾 حفظ</strong> (أو <kbd>Ctrl</kbd>+<kbd>S</kbd>)</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <!-- Step 6 -->
+                        <div class="guide-step guide-step-final">
+                            <div class="step-number">6</div>
+                            <div class="step-content">
+                                <h3>
+                                    <i class="fas fa-rocket"></i>
+                                    <span class="en-label">Run & Get Your Form!</span>
+                                    <span class="ar-label" style="display:none">شغّل واحصل على النموذج!</span>
+                                </h3>
+                                <ol class="en-label">
+                                    <li>Select <strong>createFormFromSheet</strong> from the function dropdown</li>
+                                    <li>Click <strong>▶️ Run</strong></li>
+                                    <li>Authorize the script when prompted (first time only)</li>
+                                    <li>Go to <strong>View → Logs</strong> to find your form's URL</li>
+                                </ol>
+                                <ol class="ar-label" style="display:none">
+                                    <li>اختر <strong>createFormFromSheet</strong> من قائمة الدوال</li>
+                                    <li>اضغط <strong>▶️ تشغيل</strong></li>
+                                    <li>قم بتفويض السكريبت عند المطالبة (أول مرة فقط)</li>
+                                    <li>اذهب إلى <strong>عرض ← السجلات</strong> للعثور على رابط النموذج</li>
+                                </ol>
+                                <div class="step-tip step-tip-success">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span class="en-label">Your Google Form is now live! Click "Send" in the Forms editor to share it.</span>
+                                    <span class="ar-label" style="display:none">نموذج Google جاهز الآن! اضغط "إرسال" في محرر النماذج لمشاركته.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="form-section">
@@ -69,6 +242,7 @@
                     </button>
                 </div>
             </div>
+
 
             <div class="output-section" id="outputSection" style="display: none;">
                 <div class="output-card">
@@ -131,9 +305,23 @@
                     </small>
                 </div>
                 <div class="setting-item">
+                    <label for="modelSelect">
+                        <i class="fas fa-microchip"></i>
+                        <span class="en-label">AI Model</span>
+                        <span class="ar-label" style="display:none">نموذج الذكاء الاصطناعي</span>
+                    </label>
+                    <select id="modelSelect" class="form-select">
+                        <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                        <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                        <option value="gemini-2.5-flash" selected>Gemini 2.5 Flash</option>
+                        <option value="gemini-3-flash-preview">Gemini 3 Flash (Preview)</option>
+                    </select>
+                </div>
+                <div class="setting-item">
                     <label>
                         <i class="fas fa-palette"></i>
-                        Theme
+                        <span class="en-label">Theme</span>
+                        <span class="ar-label" style="display:none">المظهر</span>
                     </label>
                     <div class="theme-selector">
                         <button class="theme-btn active" data-theme="default" onclick="setTheme('default')">
@@ -189,6 +377,7 @@
                 enterApiKey: 'Enter your Gemini API key...',
                 getApiKey: 'Get your API key from',
                 theme: 'Theme',
+                model: 'AI Model',
                 default: 'Default',
                 dark: 'Dark',
                 neon: 'Neon',
@@ -213,6 +402,7 @@
                 enterApiKey: 'أدخل مفتاح Gemini الخاص بك...',
                 getApiKey: 'احصل على مفتاحك من',
                 theme: 'المظهر',
+                model: 'نموذج الذكاء الاصطناعي',
                 default: 'افتراضي',
                 dark: 'داكن',
                 neon: 'نيون',
@@ -246,6 +436,10 @@
             document.querySelector('.setting-item label + .theme-selector .theme-btn[data-theme="default"]').textContent = t.default;
             document.querySelector('.setting-item label + .theme-selector .theme-btn[data-theme="dark"]').textContent = t.dark;
             document.querySelector('.setting-item label + .theme-selector .theme-btn[data-theme="neon"]').textContent = t.neon;
+            document.querySelector('label[for="modelSelect"] .en-label').style.display = lang === 'en' ? '' : 'none';
+            document.querySelector('label[for="modelSelect"] .ar-label').style.display = lang === 'ar' ? '' : 'none';
+            document.querySelector('.setting-item label .en-label').style.display = lang === 'en' ? '' : 'none';
+            document.querySelector('.setting-item label .ar-label').style.display = lang === 'ar' ? '' : 'none';
             document.querySelector('.modal-footer .btn-secondary').textContent = t.cancel;
             document.querySelector('.modal-footer .btn-primary').textContent = t.save;
             document.querySelector('.loading-spinner p').textContent = t.generating;
@@ -271,15 +465,6 @@
         // Set default language to EN on load
         window.addEventListener('DOMContentLoaded', function () {
             setLang('en');
-            const prompt = document.getElementById('prompt');
-            const charCountSpan = document.querySelector('.char-count');
-            if (prompt && charCountSpan) {
-                prompt.addEventListener('input', function () {
-                    const lang = document.documentElement.lang || 'en';
-                    const t = translations[lang];
-                    charCountSpan.textContent = `${prompt.value.length} ${t.charCount}`;
-                });
-            }
         });
     </script>
 </body>

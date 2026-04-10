@@ -513,21 +513,42 @@ body {
     position: relative;
 }
 
-#apiKey {
+#apiKey, .form-select {
     width: 100%;
     background: var(--bg-card);
     border: 2px solid var(--border-color);
     border-radius: 8px;
     padding: 0.75rem;
-    padding-right: 3rem;
     color: var(--text-primary);
     font-size: 1rem;
     transition: all 0.3s ease;
+    appearance: none;
+    -webkit-appearance: none;
 }
 
-#apiKey:focus {
+#apiKey {
+    padding-right: 3rem;
+}
+
+.form-select {
+    padding-right: 2.5rem;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.5rem;
+}
+
+#apiKey:focus, .form-select:focus {
     outline: none;
     border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.form-select option {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    padding: 10px;
 }
 
 .toggle-password {
@@ -772,3 +793,363 @@ body {
     justify-content: center;
     margin: 2rem 0;
 }
+
+/* ==========================================
+   IN-APP GUIDE SECTION
+   ========================================== */
+
+/* "How It Works" Toggle Button */
+.guide-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+    padding: 0.75rem 1.75rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.guide-toggle-btn:hover {
+    background: rgba(102, 126, 234, 0.15);
+    color: var(--text-primary);
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+}
+
+.guide-toggle-btn.active {
+    background: var(--gradient-primary);
+    color: white;
+    border-color: transparent;
+}
+
+/* Guide Card */
+.guide-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-card);
+}
+
+/* Guide Header */
+.guide-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.guide-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Flow Pipeline */
+.guide-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.flow-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.9rem;
+    background: rgba(102, 126, 234, 0.15);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--primary-color);
+    white-space: nowrap;
+}
+
+.flow-arrow {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    opacity: 0.5;
+}
+
+/* Step Items */
+.guide-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.guide-step {
+    display: flex;
+    gap: 1.25rem;
+    padding: 1.5rem 0;
+    position: relative;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.guide-step:last-child {
+    border-bottom: none;
+}
+
+/* Step Number */
+.step-number {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.35);
+    position: relative;
+    z-index: 1;
+}
+
+/* Connecting line between steps */
+.guide-step::before {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 56px;
+    bottom: -1px;
+    width: 2px;
+    background: linear-gradient(180deg, var(--primary-color), rgba(102, 126, 234, 0.1));
+}
+
+.guide-step:last-child::before {
+    display: none;
+}
+
+/* Step Content */
+.step-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.step-content h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-primary);
+}
+
+.step-content h3 i {
+    color: var(--primary-color);
+    font-size: 0.95rem;
+}
+
+.step-content p {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 0.75rem;
+}
+
+.step-content a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.step-content a:hover {
+    text-decoration: underline;
+}
+
+.step-content ol {
+    color: var(--text-secondary);
+    padding-left: 1.25rem;
+    line-height: 2;
+}
+
+.step-content ol li {
+    margin-bottom: 0.25rem;
+}
+
+.step-content ol li strong {
+    color: var(--text-primary);
+}
+
+/* Keyboard Shortcut Badge */
+.step-content kbd {
+    display: inline-block;
+    padding: 0.15rem 0.45rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.8em;
+    color: var(--text-primary);
+}
+
+/* Step Tip */
+.step-tip {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: rgba(102, 126, 234, 0.08);
+    border-left: 3px solid var(--primary-color);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.step-tip i {
+    color: var(--primary-color);
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.step-tip-success {
+    background: rgba(16, 185, 129, 0.1);
+    border-left-color: #10b981;
+}
+
+.step-tip-success i {
+    color: #10b981;
+}
+
+/* Step Example */
+.step-example {
+    margin-top: 0.5rem;
+    padding: 0.85rem 1rem;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    border-left: 3px solid var(--accent-color);
+}
+
+.step-example code {
+    display: block;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.825rem;
+    color: var(--accent-color);
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+/* Step Outputs */
+.step-outputs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.step-output-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 1rem;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.step-output-item i {
+    color: var(--primary-color);
+    font-size: 0.9rem;
+}
+
+/* Final Step Highlight */
+.guide-step-final .step-number {
+    background: linear-gradient(135deg, #10b981, #059669);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+}
+
+.guide-step-final h3 i {
+    color: #10b981;
+}
+
+/* RTL Support */
+[dir="rtl"] .guide-step::before {
+    left: auto;
+    right: 19px;
+}
+
+[dir="rtl"] .step-tip {
+    border-left: none;
+    border-right: 3px solid var(--primary-color);
+    border-radius: 8px 0 0 8px;
+}
+
+[dir="rtl"] .step-tip-success {
+    border-left: none;
+    border-right-color: #10b981;
+}
+
+[dir="rtl"] .step-example {
+    border-left: none;
+    border-right: 3px solid var(--accent-color);
+}
+
+[dir="rtl"] .step-content ol {
+    padding-left: 0;
+    padding-right: 1.25rem;
+}
+
+[dir="rtl"] .flow-arrow {
+    transform: scaleX(-1);
+}
+
+/* Responsive Guide */
+@media (max-width: 768px) {
+    .guide-card {
+        padding: 1.25rem;
+    }
+
+    .guide-flow {
+        gap: 0.35rem;
+    }
+
+    .flow-badge {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.6rem;
+    }
+
+    .guide-step {
+        gap: 1rem;
+    }
+
+    .step-number {
+        width: 34px;
+        height: 34px;
+        font-size: 0.95rem;
+    }
+
+    .guide-step::before {
+        left: 16px;
+    }
+
+    [dir="rtl"] .guide-step::before {
+        right: 16px;
+    }
+}
